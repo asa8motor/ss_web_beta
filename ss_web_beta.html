@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ss_web</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Кастомный скроллбар для окна LORE */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+      margin-top: 4px;
+      margin-bottom: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background-color: #D9D9D9;
+      border-radius: 10px;
+      border: 3px solid #52525b; /* Цвет фона bg-zinc-600 */
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-neutral-600 font-sans overflow-x-hidden">
+
+  <!-- Фиксированные боковые тени. Зафиксированы по краям ЭКРАНА -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden flex justify-between">
+    <div class="relative w-16 h-full">
+      <div class="absolute -left-[60px] top-0 w-16 h-full bg-black blur-3xl"></div>
+      <div class="absolute -left-[50px] top-0 w-16 h-full bg-black/50 blur-md"></div>
+    </div>
+    <div class="relative w-16 h-full">
+      <div class="absolute -right-[60px] top-0 w-16 h-full bg-black blur-3xl"></div>
+      <div class="absolute -right-[50px] top-0 w-16 h-full bg-black/50 blur-md"></div>
+    </div>
+  </div>
+
+  <!-- Главный контейнер контента -->
+  <div class="relative w-full max-w-xl mx-auto min-h-screen pb-24 z-10">
+
+    <!-- Аватарка по центру -->
+    <div class="absolute left-1/2 -translate-x-1/2 top-[53px] z-10">
+      <img src="https://placehold.co/37x37" alt="Аватар" class="w-[37px] h-[37px] rounded-full object-cover border border-white/20" />
+    </div>
+
+    <!-- Вертикальный текст справа -->
+    <div class="absolute right-1 top-[136px] h-[370px] flex flex-col justify-between items-center z-10">
+      <span class="text-white text-[8px] font-bold tracking-widest" style="writing-mode: vertical-rl; transform: rotate(180deg);">
+        04.2026
+      </span>
+      <span class="text-white text-xl font-extralight tracking-widest whitespace-nowrap" style="writing-mode: vertical-rl; transform: rotate(180deg);">
+        DATACLOUD / SECTOR+/00
+      </span>
+    </div>
+
+    <!-- Контейнер со всеми изображениями -->
+    <div class="pt-[136px] pl-3 pr-8 flex flex-col gap-1 relative z-10">
+      <img src="https://placehold.co/361x201" alt="Главный вид" class="w-full h-auto aspect-[361/201] object-cover rounded-sm shadow-md" />
+      
+      <div class="flex gap-1 w-full">
+        <div class="w-1/2"><img src="https://placehold.co/180x101" alt="Фрагмент 1" class="w-full h-full object-cover rounded-sm shadow-md" /></div>
+        <div class="w-1/2"><img src="https://placehold.co/178x100" alt="Фрагмент 2" class="w-full h-full object-cover rounded-sm shadow-md" /></div>
+      </div>
+
+      <div class="flex gap-1 w-full">
+        <div class="w-1/2"><img src="https://placehold.co/181x98" alt="Level Up" class="w-full h-full object-cover rounded-sm shadow-md" /></div>
+        <div class="w-1/2 flex flex-col gap-1">
+          <img src="https://placehold.co/101x57" alt="Деталь 1" class="w-[60%] aspect-[101/57] object-cover rounded-sm shadow-md" />
+          <img src="https://placehold.co/79x42" alt="Деталь 2" class="w-[45%] aspect-[79/42] object-cover rounded-sm shadow-md ml-3" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Интерактивная кнопка-кружок (вызывает окно) -->
+    <button id="lore-btn" class="absolute right-6 bottom-8 z-20 cursor-pointer outline-none hover:scale-110 transition-transform duration-200">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="7.5" cy="7.5" r="7.5" fill="#D9D9D9"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Всплывающее окно LORE -->
+  <div id="lore-window" class="fixed z-50 hidden flex-col w-[260px] h-[340px] bg-zinc-600 rounded-[10px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25),inset_1px_0px_4px_0px_rgba(0,0,0,0.25),inset_-1px_0px_4px_0px_rgba(0,0,0,0.25)] opacity-0 scale-95 transition-all duration-300 pointer-events-auto border border-white/10 overflow-hidden">
+    
+    <!-- Шапка окна -->
+    <div class="relative px-4 pt-4 pb-2 border-b border-white/50 mx-2 flex justify-between items-center shrink-0">
+      <span class="text-white text-2xl font-extralight tracking-wide">LORE</span>
+      <div class="w-4 h-4 bg-[#D9D9D9] rounded-full"></div>
+    </div>
+
+    <!-- Контент со скроллом. УБРАН whitespace-pre-wrap из родителя -->
+    <div id="lore-content" class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-4 py-3 custom-scrollbar text-white text-[11px] font-light font-mono leading-relaxed break-words">
+      <!-- ДОБАВЛЕН whitespace-pre-wrap сюда, чтобы не захватывать невидимые пробелы из HTML-кода -->
+      <div id="lore-text-container" class="pb-4 whitespace-pre-wrap"></div>
+    </div>
+  </div>
+
+  <!-- Скрипт логики всплывающего окна и анимации текста -->
+  <script>
+    const btn = document.getElementById('lore-btn');
+    const win = document.getElementById('lore-window');
+    const contentContainer = document.getElementById('lore-content');
+    const textContainer = document.getElementById('lore-text-container');
+    
+    let isOpen = false;
+    let currentAnimationId = 0; // Надежный счетчик для сброса анимаций
+
+    // Текст для расшифровки
+    const loreData = [
+      "SYSTEM_LOG >> ACCESS_GRANTED",
+      "ЗОНА: DATACLOUD / SECTOR_▲/00",
+      "СТАТУС: ОТКЛЮЧЕНО / ЗАБРОШЕНО",
+      "──────────────────",
+      "",
+      "[01] ОПИСАНИЕ:",
+      "Первый крупный вычислительный комплекс раннего этапа СИСТЕМЫ.",
+      "Дата запуска недоступна (архив повреждён).",
+      "Функционировал как поддерживающее ядро для первичных серверных структур.",
+      "Когда-то содержал ядра старого дизайна, обслуживаемые андроидами.",
+      "",
+      "[02] ДОП. ИНФОРМАЦИЯ:",
+      "Обнаружены следы несанкционированного доступа.",
+      "Питание нестабильно.",
+      "Рекомендуется покинуть сектор."
+    ];
+
+    const glitchChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>[]{}';
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (isOpen) {
+        closeWindow();
+      } else {
+        openWindow();
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (isOpen && !win.contains(e.target) && e.target !== btn) {
+        closeWindow();
+      }
+    });
+
+    function closeWindow() {
+      isOpen = false;
+      win.classList.remove('opacity-100', 'scale-100');
+      win.classList.add('opacity-0', 'scale-95');
+      
+      setTimeout(() => {
+        if (!isOpen) {
+          win.classList.remove('flex');
+          win.classList.add('hidden');
+        }
+      }, 300);
+    }
+
+    function openWindow() {
+      isOpen = true;
+      win.classList.remove('hidden');
+      win.classList.add('flex'); // <-- ВОТ ГЛАВНОЕ ИСПРАВЛЕНИЕ
+      
+      // ПОЗИЦИОНИРОВАНИЕ
+      const rect = btn.getBoundingClientRect();
+      const winWidth = 260; 
+      const winHeight = 340; 
+      const offset = 12; 
+      
+      let top, left;
+      let transformOriginY = 'bottom';
+      let transformOriginX = 'right';
+
+      // Окно появляется слева по умолчанию
+      left = rect.left - winWidth - offset;
+      
+      if (left < 10) {
+        left = rect.right + offset;
+        transformOriginX = 'left';
+      }
+
+      // Привязка к высоте кнопки
+      if (rect.bottom + (winHeight / 2) > window.innerHeight) {
+        top = rect.bottom - winHeight;
+        transformOriginY = 'bottom';
+      } else {
+        top = rect.top;
+        transformOriginY = 'top';
+      }
+
+      win.style.top = `${top}px`;
+      win.style.left = `${left}px`;
+      win.style.transformOrigin = `${transformOriginX} ${transformOriginY}`;
+
+      requestAnimationFrame(() => {
+        win.classList.remove('opacity-0', 'scale-95');
+        win.classList.add('opacity-100', 'scale-100');
+      });
+
+      startDecryptor();
+    }
+
+    // ИСПРАВЛЕНА ЛОГИКА АНИМАЦИИ:
+    async function startDecryptor() {
+      const animationId = ++currentAnimationId; // Генерируем уникальный ID для текущего запуска
+      textContainer.innerHTML = ''; 
+      
+      // 1. Мгновенно загружаем все строки в контейнер
+      const lineElements = [];
+      for (let i = 0; i < loreData.length; i++) {
+        if (!isOpen || animationId !== currentAnimationId) break;
+        
+        const lineEl = document.createElement('div');
+        lineEl.style.minHeight = '16px'; 
+        
+        // Создаем два слоя: один для видимого текста, другой для резервирования места
+        const visibleSpan = document.createElement('span');
+        const invisibleSpan = document.createElement('span');
+        
+        invisibleSpan.className = 'opacity-0'; // Делаем текст невидимым
+        invisibleSpan.innerText = loreData[i]; // Сразу вставляем весь текст лора
+        
+        lineEl.appendChild(visibleSpan);
+        lineEl.appendChild(invisibleSpan);
+        textContainer.appendChild(lineEl);
+        
+        lineElements.push({ visibleSpan, invisibleSpan });
+      }
+      
+      // 2. Теперь по очереди запускаем дешифратор для каждой строки
+      for (let i = 0; i < loreData.length; i++) {
+        if (!isOpen || animationId !== currentAnimationId) break;
+        await typeWriterLine(loreData[i], lineElements[i], animationId);
+      }
+    }
+
+    function typeWriterLine(text, elements, animationId) {
+      return new Promise(resolve => {
+        if (!text) {
+          resolve();
+          return;
+        }
+
+        const { visibleSpan, invisibleSpan } = elements;
+        let iteration = 0;
+
+        const interval = setInterval(() => {
+          // Защита от "зависаний" процесса
+          if (!isOpen || animationId !== currentAnimationId) {
+            clearInterval(interval);
+            resolve();
+            return;
+          }
+
+          let displayStr = '';
+          let invisibleStr = '';
+          
+          for (let i = 0; i < text.length; i++) {
+            if (i < iteration) {
+              // Расшифрованные буквы
+              displayStr += text[i];
+            } else if (i < iteration + 5) {
+              // Эффект помех
+              displayStr += text[i] === ' ' ? ' ' : glitchChars[Math.floor(Math.random() * glitchChars.length)];
+            } else {
+              // Оставшийся невидимый текст (сохраняет правильные переносы строк)
+              invisibleStr += text[i];
+            }
+          }
+
+          visibleSpan.innerText = displayStr;
+          invisibleSpan.innerText = invisibleStr;
+
+          iteration += 2.5; 
+          
+          if (iteration >= text.length) {
+            clearInterval(interval);
+            visibleSpan.innerText = text;
+            invisibleSpan.innerText = '';
+            resolve();
+          }
+        }, 10); 
+      });
+    }
+  </script>
+</body>
+</html>
